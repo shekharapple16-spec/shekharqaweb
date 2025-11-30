@@ -4,7 +4,9 @@ export async function createEnrollment(enrollmentData) {
   const { name, email, phone, company, experience } = enrollmentData;
   const id = Date.now().toString();
   
-  const client = createClient();
+  const client = createClient({
+    connectionString: process.env.POSTGRES_URL
+  });
   
   try {
     await client.connect();
@@ -38,7 +40,9 @@ export async function createEnrollment(enrollmentData) {
 }
 
 export async function getEnrollments() {
-  const client = createClient();
+  const client = createClient({
+    connectionString: process.env.POSTGRES_URL
+  });
   
   try {
     await client.connect();
@@ -59,7 +63,9 @@ export async function getEnrollments() {
 }
 
 export async function deleteEnrollment(id) {
-  const client = createClient();
+  const client = createClient({
+    connectionString: process.env.POSTGRES_URL
+  });
   
   try {
     await client.connect();
