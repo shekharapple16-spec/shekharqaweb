@@ -1,5 +1,10 @@
 import { sql } from '@vercel/postgres';
 
+// Ensure DATABASE_URL or POSTGRES_URL is set
+if (!process.env.DATABASE_URL && !process.env.POSTGRES_URL) {
+  console.error('❌ ERROR: Neither DATABASE_URL nor POSTGRES_URL environment variable is set!');
+}
+
 // Cache to track if table is already created
 let tableCreated = false;
 
@@ -9,6 +14,8 @@ export async function createEnrollment(enrollmentData) {
   
   try {
     console.log('Creating enrollment in database...');
+    console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
+    console.log('POSTGRES_URL exists:', !!process.env.POSTGRES_URL);
     
     // Only create table on first call
     if (!tableCreated) {

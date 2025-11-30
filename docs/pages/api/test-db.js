@@ -10,6 +10,21 @@ export default async function handler(req, res) {
   try {
     console.log(`[TEST] Action: ${action}`);
     console.log(`[TEST] DATABASE_URL: ${process.env.DATABASE_URL ? 'SET ✅' : 'MISSING ❌'}`);
+    console.log(`[TEST] POSTGRES_URL: ${process.env.POSTGRES_URL ? 'SET ✅' : 'MISSING ❌'}`);
+
+    // Check which one is available
+    const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+    if (!dbUrl) {
+      return res.status(500).json({
+        success: false,
+        message: 'Environment configuration error',
+        error: 'Neither DATABASE_URL nor POSTGRES_URL is set',
+        availableEnvVars: {
+          DATABASE_URL: process.env.DATABASE_URL ? 'SET' : 'MISSING',
+          POSTGRES_URL: process.env.POSTGRES_URL ? 'SET' : 'MISSING'
+        }
+      });
+    }
 
     if (action === 'connection-test') {
       // Just try to connect
