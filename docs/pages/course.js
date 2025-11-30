@@ -21,6 +21,7 @@ export default function Course() {
     email: '',
     phone: '',
     company: '',
+    linkedin: '',
     experience: 'beginner'
   });
 
@@ -109,25 +110,27 @@ export default function Course() {
       const data = await response.json();
 
       // Show success message regardless of response status
-      alert(`Thank you for enrolling!\n\nName: ${enrollmentData.name}\nEmail: ${enrollmentData.email}\nPhone: ${enrollmentData.phone}\nCompany: ${enrollmentData.company}\nExperience: ${enrollmentData.experience}`);
+      alert(`Thank you for enrolling!\n\nName: ${enrollmentData.name}\nEmail: ${enrollmentData.email}\nPhone: ${enrollmentData.phone}\nCompany: ${enrollmentData.company}\nLinkedIn: ${enrollmentData.linkedin}\nExperience: ${enrollmentData.experience}`);
       setShowEnrollForm(false);
       setEnrollmentData({
         name: '',
         email: '',
         phone: '',
         company: '',
+        linkedin: '',
         experience: 'beginner'
       });
     } catch (error) {
       console.error('Submission error:', error);
       // Show success message even on error
-      alert(`Thank you for enrolling!\n\nName: ${enrollmentData.name}\nEmail: ${enrollmentData.email}\nPhone: ${enrollmentData.phone}\nCompany: ${enrollmentData.company}\nExperience: ${enrollmentData.experience}`);
+      alert(`Thank you for enrolling!\n\nName: ${enrollmentData.name}\nEmail: ${enrollmentData.email}\nPhone: ${enrollmentData.phone}\nCompany: ${enrollmentData.company}\nLinkedIn: ${enrollmentData.linkedin}\nExperience: ${enrollmentData.experience}`);
       setShowEnrollForm(false);
       setEnrollmentData({
         name: '',
         email: '',
         phone: '',
         company: '',
+        linkedin: '',
         experience: 'beginner'
       });
     } finally {
@@ -417,7 +420,7 @@ export default function Course() {
                   className={`h-full rounded-full transition-all duration-1000 font-bold flex items-center justify-center text-white text-sm relative ${enrollmentStats.total >= 3 ? 'bg-gradient-to-r from-green-400 to-green-600 shadow-lg shadow-green-400' : 'bg-gradient-to-r from-yellow-400 to-yellow-600 shadow-lg shadow-yellow-400'}`}
                   style={{ width: '100%' }}
                 >
-                  {enrollmentStats.total >= 3 ? '' : 'Almost There...'}
+                  {enrollmentStats.total >= 3 ? '✓ New Batch Enrollment Started - FREE' : '✓ New Batch Enrollment Started - FREE'}
                 </div>
               </div>
             </div>
@@ -427,7 +430,7 @@ export default function Course() {
               {enrollmentStats.total >= 3 ? (
                 <p className="text-green-600 dark:text-green-400 font-semibold"></p>
               ) : (
-                <p className="text-yellow-600 dark:text-yellow-400 font-semibold">📈 Just {3 - enrollmentStats.total} more to reach our milestone!</p>
+                <p className="text-yellow-600 dark:text-yellow-400 font-semibold"></p>
               )}
             </div>
           </div>
@@ -520,6 +523,21 @@ export default function Course() {
                       onChange={handleInputChange}
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-700 dark:text-gray-200"
                       placeholder="Your Company"
+                    />
+                  </div>
+
+                  {/* LinkedIn Profile Field */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      LinkedIn Profile
+                    </label>
+                    <input
+                      type="text"
+                      name="linkedin"
+                      value={enrollmentData.linkedin}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-700 dark:text-gray-200"
+                      placeholder="www.linkedin.com/in/yourprofile"
                     />
                   </div>
 
