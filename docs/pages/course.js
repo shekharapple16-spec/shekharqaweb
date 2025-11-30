@@ -7,6 +7,22 @@ export default function Course() {
   const [activeTab, setActiveTab] = useState('overview');
   const [existingVideos, setExistingVideos] = useState([]);
   const [loadingVideos, setLoadingVideos] = useState(true);
+  const [showEnrollForm, setShowEnrollForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [enrollmentStats, setEnrollmentStats] = useState({
+    total: 0,
+    beginner: 0,
+    intermediate: 0,
+    advanced: 0
+  });
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [enrollmentData, setEnrollmentData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    experience: 'beginner'
+  });
 
   const allVideos = [
     {
@@ -43,6 +59,84 @@ export default function Course() {
     };
     checkVideos();
   }, []);
+
+  useEffect(() => {
+    const fetchEnrollmentStats = async () => {
+      try {
+        const response = await fetch('/api/get-enrollments');
+        const data = await response.json();
+        
+        if (data.success && data.enrollments) {
+          const enrollments = data.enrollments;
+          const beginner = enrollments.filter(e => e.experience === 'beginner').length;
+          const intermediate = enrollments.filter(e => e.experience === 'intermediate').length;
+          const advanced = enrollments.filter(e => e.experience === 'advanced').length;
+          const total = enrollments.length;
+
+          setEnrollmentStats({
+            total,
+            beginner,
+            intermediate,
+            advanced
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    fetchEnrollmentStats();
+    // Refresh stats every 10 seconds
+    const interval = setInterval(fetchEnrollmentStats, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleEnrollmentSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      const response = await fetch('/api/send-enrollment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(enrollmentData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(`Thank you for enrolling!\n\nName: ${enrollmentData.name}\nEmail: ${enrollmentData.email}\nPhone: ${enrollmentData.phone}\nCompany: ${enrollmentData.company}\nExperience: ${enrollmentData.experience}`);
+        setShowEnrollForm(false);
+        setEnrollmentData({
+          name: '',
+          email: '',
+          phone: '',
+          company: '',
+          experience: 'beginner'
+        });
+      } else {
+        alert(`Error: ${data.error || 'Failed to submit enrollment'}`);
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      alert('Error submitting enrollment. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEnrollmentData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   return (
     <Layout>
       {/* Course Header */}
@@ -303,16 +397,156 @@ export default function Course() {
             </div>
           </div>
 
+          {/* Enrollment Progress Bar */}
+          <div className="my-12 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-10 border-2 border-blue-200 dark:border-blue-700 shadow-lg">
+            <div className="text-center mb-8">
+              <p className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">⚡ Live Enrollment</p>
+              <p className="text-4xl font-black text-gray-900 dark:text-white mt-3">{enrollmentStats.total} Professionals Joined</p>
+              <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm">Join the growing community today!</p>
+            </div>
+            
+            {/* Animated Bar Container */}
+            <div className="relative">
+              <div className="w-full bg-gray-300 dark:bg-gray-600 rounded-full h-8 overflow-hidden shadow-inner">
+                <div
+                  className={`h-full rounded-full transition-all duration-1000 font-bold flex items-center justify-center text-white text-sm relative ${enrollmentStats.total >= 3 ? 'bg-gradient-to-r from-green-400 to-green-600 shadow-lg shadow-green-400' : 'bg-gradient-to-r from-yellow-400 to-yellow-600 shadow-lg shadow-yellow-400'}`}
+                  style={{ width: '100%' }}
+                >
+                  {enrollmentStats.total >= 3 ? '' : 'Almost There...'}
+                </div>
+              </div>
+            </div>
+
+            {/* Status Message */}
+            <div className="mt-6 text-center">
+              {enrollmentStats.total >= 3 ? (
+                <p className="text-green-600 dark:text-green-400 font-semibold"></p>
+              ) : (
+                <p className="text-yellow-600 dark:text-yellow-400 font-semibold">📈 Just {3 - enrollmentStats.total} more to reach our milestone!</p>
+              )}
+            </div>
+          </div>
+
           {/* Call to Action */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-900 dark:to-purple-900 rounded-lg p-8 text-center text-white">
             <h3 className="text-2xl font-bold mb-4">Ready to Get Started?</h3>
             <p className="text-lg mb-6 opacity-90">
               Enroll now and master GitHub Copilot for test automation in just 2 days!
             </p>
-            <button className="bg-white text-blue-600 hover:bg-gray-100 font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105">
+            <button 
+              onClick={() => setShowEnrollForm(true)}
+              className="bg-white text-blue-600 hover:bg-gray-100 font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105">
               Enroll Now
             </button>
           </div>
+
+          {/* Enrollment Form Modal */}
+          {showEnrollForm && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
+                <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+                  <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Enroll Now</h2>
+                  <button 
+                    onClick={() => setShowEnrollForm(false)}
+                    className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-2xl"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <form onSubmit={handleEnrollmentSubmit} className="p-6 space-y-4">
+                  {/* Name Field */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={enrollmentData.name}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-700 dark:text-gray-200"
+                      placeholder="John Doe"
+                    />
+                  </div>
+
+                  {/* Email Field */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={enrollmentData.email}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-700 dark:text-gray-200"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+
+                  {/* Phone Field */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Phone Number *
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={enrollmentData.phone}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-700 dark:text-gray-200"
+                      placeholder="+1 (555) 123-4567"
+                    />
+                  </div>
+
+                  {/* Company Field */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Company
+                    </label>
+                    <input
+                      type="text"
+                      name="company"
+                      value={enrollmentData.company}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-700 dark:text-gray-200"
+                      placeholder="Your Company"
+                    />
+                  </div>
+
+                  {/* Experience Level */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Experience Level
+                    </label>
+                    <select
+                      name="experience"
+                      value={enrollmentData.experience}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-700 dark:text-gray-200"
+                    >
+                      <option value="beginner">Beginner</option>
+                      <option value="intermediate">Intermediate</option>
+                      <option value="advanced">Advanced</option>
+                    </select>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded-lg transition duration-300 mt-6"
+                  >
+                    {submitting ? 'Submitting...' : 'Submit Enrollment'}
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
             </>
           )}
 
