@@ -417,20 +417,20 @@ export default function Course() {
             <div className="relative">
               <div className="w-full bg-gray-300 dark:bg-gray-600 rounded-full h-8 overflow-hidden shadow-inner">
                 <div
-                  className={`h-full rounded-full transition-all duration-1000 font-bold flex items-center justify-center text-white text-sm relative ${enrollmentStats.total >= 3 ? 'bg-gradient-to-r from-green-400 to-green-600 shadow-lg shadow-green-400' : 'bg-gradient-to-r from-yellow-400 to-yellow-600 shadow-lg shadow-yellow-400'}`}
-                  style={{ width: '100%' }}
+                  className={`h-full rounded-full transition-all duration-1000 font-bold flex items-center justify-center text-white text-sm relative bg-gradient-to-r from-green-400 to-green-600 shadow-lg shadow-green-400`}
+                  style={{ width: `${Math.max(15, Math.min((enrollmentStats.total / 15) * 100, 100))}%` }}
                 >
-                  {enrollmentStats.total >= 3 ? '✓ New Batch Enrollment Started - FREE' : '✓ New Batch Enrollment Started - FREE'}
+                  {enrollmentStats.total >= 15 ? '✓ New Batch Enrollment Started - FREE' : `${Math.max(15, Math.round((enrollmentStats.total / 15) * 100))}%`}
                 </div>
               </div>
             </div>
 
             {/* Status Message */}
             <div className="mt-6 text-center">
-              {enrollmentStats.total >= 3 ? (
-                <p className="text-green-600 dark:text-green-400 font-semibold"></p>
+              {enrollmentStats.total >= 25 ? (
+                <p className="text-green-600 dark:text-green-400 font-semibold">✓ Batch Full - New Batch Enrollment Started!</p>
               ) : (
-                <p className="text-yellow-600 dark:text-yellow-400 font-semibold"></p>
+                <p className="text-yellow-600 dark:text-yellow-400 font-semibold">{25 - enrollmentStats.total} spots remaining for Batch 2</p>
               )}
             </div>
           </div>
