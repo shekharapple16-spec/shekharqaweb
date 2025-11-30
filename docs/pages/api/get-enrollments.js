@@ -1,8 +1,7 @@
-import fs from 'fs';
-import path from 'path';
+import { getEnrollments } from '../../lib/db';
 import { verifyAdminAuth } from '../../lib/auth';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -13,26 +12,12 @@ export default function handler(req, res) {
   }
 
   try {
-    // Use proper path resolution for both dev and production
-    const projectRoot = path.resolve(process.cwd(), 'data');
-    const dataDir = projectRoot;
-    const filePath = path.join(dataDir, 'enrollments.json');
-
-    if (!fs.existsSync(filePath)) {
-      return res.status(200).json({
-        success: true,
-        enrollments: [],
-      });
-    }
-
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
-    const enrollments = JSON.parse(fileContent);
+    // Fetch enrollments from Vercel Postgres
+    const enrollments = await getEnrollments();
 
     res.status(200).json({
       success: true,
-      enrollments: enrollments.sort(
-        (a, b) => new Date(b.enrolledAt) - new Date(a.enrolledAt)
-      ),
+      enrollments,
       total: enrollments.length,
     });
   } catch (error) {
