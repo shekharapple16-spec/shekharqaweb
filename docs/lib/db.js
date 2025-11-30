@@ -8,12 +8,12 @@ export async function createEnrollment(enrollmentData) {
   const id = Date.now().toString();
   
   try {
-    console.log('Inserting enrollment...');
+    console.log('Creating enrollment in database...');
     
     // Only create table on first call
     if (!tableCreated) {
       try {
-        console.log('Creating table...');
+        console.log('Creating table if not exists...');
         await sql`
           CREATE TABLE IF NOT EXISTS enrollments (
             id TEXT PRIMARY KEY,
@@ -26,53 +26,59 @@ export async function createEnrollment(enrollmentData) {
           )
         `;
         tableCreated = true;
-        console.log('Table created/verified');
+        console.log('✅ Table ready');
       } catch (tableError) {
-        console.log('Table check note:', tableError.message);
+        console.log('Table status:', tableError.message);
         tableCreated = true;
       }
     }
 
     // Insert enrollment
+    console.log('Inserting record...');
     const result = await sql`
       INSERT INTO enrollments (id, name, email, phone, company, experience)
-      VALUES (${id}, ${name}, ${email}, ${phone}, ${company || null}, ${experience})
-      RETURNING *
+      VALUES (${id}, ${name}, ${email}, ${phone}, ${company || ''}, ${experience})
+      RETURNING id, name, email
     `;
     
-    console.log('Enrollment saved successfully');
+    console.log('✅ Enrollment saved');
     return { id, name, email, phone, company, experience, enrolledAt: new Date().toISOString() };
   } catch (error) {
-    console.error('Error creating enrollment:', error);
-    throw error;
+    console.error('❌ Error:', error.message);
+    throw new Error(`Database error: ${error.message}`);
   }
 }
 
 export async function getEnrollments() {
   try {
+    console.log('Fetching enrollments...');
     const result = await sql`
       SELECT id, name, email, phone, company, experience, enrolled_at as "enrolledAt"
       FROM enrollments
       ORDER BY enrolled_at DESC
     `;
     
+    console.log(`✅ Found ${result.rows.length} enrollments`);
     return result.rows || [];
   } catch (error) {
-    console.error('Error fetching enrollments:', error);
-    throw error;
+    console.error('❌ Error:', error.message);
+    return [];
   }
 }
 
 export async function deleteEnrollment(id) {
   try {
+    console.log('Deleting enrollment:', id);
     const result = await sql`
       DELETE FROM enrollments
       WHERE id = ${id}
     `;
     
-    return result.rowCount > 0;
+    const deleted = result.rowCount > 0;
+    console.log(deleted ? '✅ Deleted' : '⚠️ Not found');
+    return deleted;
   } catch (error) {
-    console.error('Error deleting enrollment:', error);
-    throw error;
+    console.error('❌ Error:', error.message);
+    throw new Error(`Delete error: ${error.message}`);
   }
 }
