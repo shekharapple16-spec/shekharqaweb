@@ -1,12 +1,16 @@
-import { sql } from '@vercel/postgres';
+import { createClient } from '@vercel/postgres';
 
 export async function createEnrollment(enrollmentData) {
   const { name, email, phone, company, experience } = enrollmentData;
   const id = Date.now().toString();
   
+  const client = createClient();
+  
   try {
+    await client.connect();
+    
     // Create table if it doesn't exist (on first call)
-    await sql`
+    await client.sql`
       CREATE TABLE IF NOT EXISTS enrollments (
         id TEXT PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -19,7 +23,7 @@ export async function createEnrollment(enrollmentData) {
     `;
 
     // Insert enrollment
-    await sql`
+    await client.sql`
       INSERT INTO enrollments (id, name, email, phone, company, experience)
       VALUES (${id}, ${name}, ${email}, ${phone}, ${company || null}, ${experience})
     `;
@@ -28,12 +32,18 @@ export async function createEnrollment(enrollmentData) {
   } catch (error) {
     console.error('Error creating enrollment:', error);
     throw error;
+  } finally {
+    await client.end();
   }
 }
 
 export async function getEnrollments() {
+  const client = createClient();
+  
   try {
-    const result = await sql`
+    await client.connect();
+    
+    const result = await client.sql`
       SELECT id, name, email, phone, company, experience, enrolled_at as "enrolledAt"
       FROM enrollments
       ORDER BY enrolled_at DESC
@@ -43,12 +53,18 @@ export async function getEnrollments() {
   } catch (error) {
     console.error('Error fetching enrollments:', error);
     throw error;
+  } finally {
+    await client.end();
   }
 }
 
 export async function deleteEnrollment(id) {
+  const client = createClient();
+  
   try {
-    const result = await sql`
+    await client.connect();
+    
+    const result = await client.sql`
       DELETE FROM enrollments
       WHERE id = ${id}
     `;
@@ -57,5 +73,7 @@ export async function deleteEnrollment(id) {
   } catch (error) {
     console.error('Error deleting enrollment:', error);
     throw error;
+  } finally {
+    await client.end();
   }
 }
