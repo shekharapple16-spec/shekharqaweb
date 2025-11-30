@@ -401,7 +401,6 @@ export default function Course() {
           <div className="my-12 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-10 border-2 border-blue-200 dark:border-blue-700 shadow-lg">
             <div className="text-center mb-8">
               <p className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">⚡ Live Enrollment</p>
-              <p className="text-4xl font-black text-gray-900 dark:text-white mt-3">{enrollmentStats.total} Professionals Joined</p>
               <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm">Join the growing community today!</p>
             </div>
             
