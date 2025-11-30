@@ -19,7 +19,9 @@ export default function handler(req, res) {
   }
 
   try {
-    const dataDir = path.join(process.cwd(), 'data');
+    // Use proper path resolution for both dev and production
+    const projectRoot = path.resolve(process.cwd(), 'data');
+    const dataDir = projectRoot;
     const filePath = path.join(dataDir, 'enrollments.json');
 
     if (!fs.existsSync(filePath)) {

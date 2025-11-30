@@ -4,11 +4,18 @@ import path from 'path';
 // Function to save enrollment to file
 async function saveEnrollmentToFile(enrollmentData) {
   try {
-    const dataDir = path.join(process.cwd(), 'data');
+    // Use proper path resolution for both dev and production
+    const projectRoot = path.resolve(process.cwd(), 'data');
+    const dataDir = projectRoot;
     const filePath = path.join(dataDir, 'enrollments.json');
+
+    console.log('Enrollment save path:', filePath);
+    console.log('Current working directory:', process.cwd());
+    console.log('Data directory:', dataDir);
 
     // Create data directory if it doesn't exist
     if (!fs.existsSync(dataDir)) {
+      console.log('Creating data directory:', dataDir);
       fs.mkdirSync(dataDir, { recursive: true });
     }
 
@@ -16,7 +23,12 @@ async function saveEnrollmentToFile(enrollmentData) {
     let enrollments = [];
     if (fs.existsSync(filePath)) {
       const fileContent = fs.readFileSync(filePath, 'utf-8');
-      enrollments = JSON.parse(fileContent);
+      try {
+        enrollments = JSON.parse(fileContent);
+      } catch (parseError) {
+        console.error('Error parsing enrollments.json:', parseError);
+        enrollments = [];
+      }
     }
 
     // Add new enrollment with timestamp
@@ -29,7 +41,9 @@ async function saveEnrollmentToFile(enrollmentData) {
     enrollments.push(newEnrollment);
 
     // Save back to file
+    console.log('Writing enrollments to file, count:', enrollments.length);
     fs.writeFileSync(filePath, JSON.stringify(enrollments, null, 2));
+    console.log('Enrollment saved successfully');
     return newEnrollment;
   } catch (error) {
     console.error('Error saving enrollment to file:', error);
@@ -66,7 +80,9 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('Enrollment error:', error);
+    console.error('Error details:', error.message, error.code);
     res.status(500).json({
+      success: false,
       error: 'Failed to submit enrollment. Please try again.',
       details: error.message,
     });
