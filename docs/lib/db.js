@@ -1,76 +1,71 @@
-import { createClient } from '@vercel/postgres';
+import { sql } from '@vercel/postgres';
+
+// Cache to track if table is already created
+let tableCreated = false;
 
 export async function createEnrollment(enrollmentData) {
   const { name, email, phone, company, experience } = enrollmentData;
   const id = Date.now().toString();
   
-  const client = createClient({
-    connectionString: process.env.POSTGRES_URL
-  });
-  
   try {
-    await client.connect();
+    console.log('Inserting enrollment...');
     
-    // Create table if it doesn't exist (on first call)
-    await client.sql`
-      CREATE TABLE IF NOT EXISTS enrollments (
-        id TEXT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        phone VARCHAR(20) NOT NULL,
-        company VARCHAR(255),
-        experience VARCHAR(50) NOT NULL,
-        enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `;
+    // Only create table on first call
+    if (!tableCreated) {
+      try {
+        console.log('Creating table...');
+        await sql`
+          CREATE TABLE IF NOT EXISTS enrollments (
+            id TEXT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            phone VARCHAR(20) NOT NULL,
+            company VARCHAR(255),
+            experience VARCHAR(50) NOT NULL,
+            enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          )
+        `;
+        tableCreated = true;
+        console.log('Table created/verified');
+      } catch (tableError) {
+        console.log('Table check note:', tableError.message);
+        tableCreated = true;
+      }
+    }
 
     // Insert enrollment
-    await client.sql`
+    const result = await sql`
       INSERT INTO enrollments (id, name, email, phone, company, experience)
       VALUES (${id}, ${name}, ${email}, ${phone}, ${company || null}, ${experience})
+      RETURNING *
     `;
     
+    console.log('Enrollment saved successfully');
     return { id, name, email, phone, company, experience, enrolledAt: new Date().toISOString() };
   } catch (error) {
     console.error('Error creating enrollment:', error);
     throw error;
-  } finally {
-    await client.end();
   }
 }
 
 export async function getEnrollments() {
-  const client = createClient({
-    connectionString: process.env.POSTGRES_URL
-  });
-  
   try {
-    await client.connect();
-    
-    const result = await client.sql`
+    const result = await sql`
       SELECT id, name, email, phone, company, experience, enrolled_at as "enrolledAt"
       FROM enrollments
       ORDER BY enrolled_at DESC
     `;
     
-    return result.rows;
+    return result.rows || [];
   } catch (error) {
     console.error('Error fetching enrollments:', error);
     throw error;
-  } finally {
-    await client.end();
   }
 }
 
 export async function deleteEnrollment(id) {
-  const client = createClient({
-    connectionString: process.env.POSTGRES_URL
-  });
-  
   try {
-    await client.connect();
-    
-    const result = await client.sql`
+    const result = await sql`
       DELETE FROM enrollments
       WHERE id = ${id}
     `;
@@ -79,7 +74,5 @@ export async function deleteEnrollment(id) {
   } catch (error) {
     console.error('Error deleting enrollment:', error);
     throw error;
-  } finally {
-    await client.end();
   }
 }
