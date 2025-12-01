@@ -146,6 +146,8 @@ export default function Course() {
     }));
   };
 
+    const maxEnrollment = 25;
+
   return (
     <Layout>
       {/* Course Header */}
@@ -418,19 +420,19 @@ export default function Course() {
               <div className="w-full bg-gray-300 dark:bg-gray-600 rounded-full h-8 overflow-hidden shadow-inner">
                 <div
                   className={`h-full rounded-full transition-all duration-1000 font-bold flex items-center justify-center text-white text-sm relative bg-gradient-to-r from-green-400 to-green-600 shadow-lg shadow-green-400`}
-                  style={{ width: `${Math.max(15, Math.min((enrollmentStats.total / 15) * 100, 100))}%` }}
+                  style={{ width: `${(enrollmentStats.total / maxEnrollment) * 100}%` }}
                 >
-                  {enrollmentStats.total >= 15 ? '✓ New Batch Enrollment Started - FREE' : `${Math.max(15, Math.round((enrollmentStats.total / 15) * 100))}%`}
+                  {`${Math.round((enrollmentStats.total / maxEnrollment) * 100)}%`}
                 </div>
               </div>
             </div>
 
             {/* Status Message */}
             <div className="mt-6 text-center">
-              {enrollmentStats.total >= 25 ? (
-                <p className="text-green-600 dark:text-green-400 font-semibold">✓ Batch Full - New Batch Enrollment Started!</p>
+              {enrollmentStats.total >= maxEnrollment ? (
+                <p className="text-green-600 dark:text-green-400 font-semibold">✓ Batch Full - Stay tuned for the next batch!</p>
               ) : (
-                <p className="text-yellow-600 dark:text-yellow-400 font-semibold">{25 - enrollmentStats.total} spots remaining for Batch 2</p>
+                <p className="text-yellow-600 dark:text-yellow-400 font-semibold">{maxEnrollment - enrollmentStats.total} spots remaining for Batch 2</p>
               )}
             </div>
           </div>
