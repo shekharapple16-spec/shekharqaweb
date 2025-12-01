@@ -1,6 +1,7 @@
 import Layout from '../components/Layout';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import Head from 'next/head';
 
 export default function Course() {
   const [selectedVideo, setSelectedVideo] = useState(null);
@@ -150,6 +151,11 @@ export default function Course() {
 
   return (
     <Layout>
+      <Head>
+        <title>GitHub Copilot for Test Automation Course</title>
+        <meta name="description" content="Master AI-powered test case generation, test data creation, and script automation with GitHub Copilot." />
+        <link rel="canonical" href="https://shekhar-pro.vercel.app/course" />
+      </Head>
       {/* Course Header */}
       <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 dark:from-blue-900 dark:via-purple-900 dark:to-pink-900 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">

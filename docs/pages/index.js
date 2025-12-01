@@ -1,8 +1,14 @@
 import Layout from '../components/Layout';
+import Head from 'next/head';
 
 export default function Home() {
   return (
     <Layout>
+      <Head>
+        <title>Master GitHub Copilot for Faster Development</title>
+        <meta name="description" content="Your complete guide to leveraging AI-powered coding assistance for faster development, better code quality, and increased productivity." />
+        <link rel="canonical" href="https://shekhar-pro.vercel.app/" />
+      </Head>
       {/* HEADER - Hero Section with Images */}
       <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 dark:from-blue-900 dark:via-purple-900 dark:to-pink-900 flex items-center justify-center px-0 relative overflow-hidden py-20">
         {/* Animated background elements */}
