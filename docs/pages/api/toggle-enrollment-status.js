@@ -2,8 +2,8 @@ export default function handler(req, res) {
   // This is a simple in-memory toggle for enrollment status
   // In production, you'd want to use a database
   
-  if (!global.enrollmentOpen) {
-    global.enrollmentOpen = false;
+  if (global.enrollmentOpen === undefined) {
+    global.enrollmentOpen = true;
   }
 
   if (req.method === 'POST') {
@@ -18,7 +18,7 @@ export default function handler(req, res) {
   if (req.method === 'GET') {
     return res.status(200).json({ 
       success: true, 
-      enrollmentOpen: global.enrollmentOpen || false
+      enrollmentOpen: global.enrollmentOpen === undefined ? true : global.enrollmentOpen
     });
   }
 

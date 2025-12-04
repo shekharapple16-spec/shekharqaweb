@@ -17,7 +17,7 @@ export default function Course() {
     advanced: 0
   });
   const [loadingStats, setLoadingStats] = useState(true);
-  const [enrollmentOpen, setEnrollmentOpen] = useState(false);
+  const [enrollmentOpen, setEnrollmentOpen] = useState(true);
   const [enrollmentData, setEnrollmentData] = useState({
     name: '',
     email: '',
