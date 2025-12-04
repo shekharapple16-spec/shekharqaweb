@@ -17,6 +17,7 @@ export default function Course() {
     advanced: 0
   });
   const [loadingStats, setLoadingStats] = useState(true);
+  const [enrollmentOpen, setEnrollmentOpen] = useState(false);
   const [enrollmentData, setEnrollmentData] = useState({
     name: '',
     email: '',
@@ -81,6 +82,13 @@ export default function Course() {
             intermediate,
             advanced
           });
+        }
+
+        // Fetch enrollment status
+        const statusResponse = await fetch('/api/toggle-enrollment-status');
+        const statusData = await statusResponse.json();
+        if (statusData.success) {
+          setEnrollmentOpen(statusData.enrollmentOpen);
         }
       } catch (error) {
         console.error('Error fetching stats:', error);
@@ -436,7 +444,9 @@ export default function Course() {
             {/* Status Message */}
             <div className="mt-6 text-center">
               {enrollmentStats.total >= maxEnrollment ? (
-                <p className="text-green-600 dark:text-green-400 font-semibold">✓ Batch Full - Stay tuned for the next batch!</p>
+                <p className="text-green-600 dark:text-green-400 font-semibold">✓ Enrollments Completed !! Thanks ... Wait for Next Batch - Coming Soon</p>
+              ) : !enrollmentOpen ? (
+                <p className="text-red-600 dark:text-red-400 font-semibold">⚠ Enrollment Currently Closed</p>
               ) : (
                 <p className="text-yellow-600 dark:text-yellow-400 font-semibold">{maxEnrollment - enrollmentStats.total} spots remaining for Batch 2</p>
               )}
@@ -447,12 +457,22 @@ export default function Course() {
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-900 dark:to-purple-900 rounded-lg p-8 text-center text-white">
             <h3 className="text-2xl font-bold mb-4">Ready to Get Started?</h3>
             <p className="text-lg mb-6 opacity-90">
-              Enroll now and master GitHub Copilot for test automation in just 2 days!
+              {enrollmentStats.total >= maxEnrollment 
+                ? 'Batch is now full. Stay tuned for the next batch!'
+                : !enrollmentOpen
+                ? 'Enrollment is currently closed. Please check back soon!'
+                : 'Enroll now and master GitHub Copilot for test automation in just 2 days!'
+              }
             </p>
             <button 
               onClick={() => setShowEnrollForm(true)}
-              className="bg-white text-blue-600 hover:bg-gray-100 font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105">
-              Enroll Now
+              disabled={enrollmentStats.total >= maxEnrollment || !enrollmentOpen}
+              className={`font-bold py-3 px-8 rounded-lg transition duration-300 transform ${
+                enrollmentStats.total >= maxEnrollment || !enrollmentOpen
+                  ? 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-50'
+                  : 'bg-white text-blue-600 hover:bg-gray-100 hover:scale-105'
+              }`}>
+              {enrollmentStats.total >= maxEnrollment ? 'Batch Full' : !enrollmentOpen ? 'Enrollment Closed' : 'Enroll Now'}
             </button>
           </div>
 

@@ -12,6 +12,8 @@ export default function Enrollments() {
   const [filterExperience, setFilterExperience] = useState('all');
   const [isAuthed, setIsAuthed] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [enrollmentOpen, setEnrollmentOpen] = useState(false);
+  const [togglingStatus, setTogglingStatus] = useState(false);
 
   useEffect(() => {
     // Check if component is mounted (client-side only)
@@ -22,6 +24,7 @@ export default function Enrollments() {
     } else {
       setIsAuthed(true);
       fetchEnrollments();
+      fetchEnrollmentStatus();
     }
   }, []);
 
@@ -43,6 +46,39 @@ export default function Enrollments() {
       console.error('Error fetching enrollments:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchEnrollmentStatus = async () => {
+    try {
+      const response = await fetch('/api/toggle-enrollment-status');
+      const data = await response.json();
+      if (data.success) {
+        setEnrollmentOpen(data.enrollmentOpen);
+      }
+    } catch (error) {
+      console.error('Error fetching enrollment status:', error);
+    }
+  };
+
+  const toggleEnrollmentStatus = async () => {
+    setTogglingStatus(true);
+    try {
+      const response = await fetch('/api/toggle-enrollment-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isOpen: !enrollmentOpen }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setEnrollmentOpen(data.enrollmentOpen);
+      }
+    } catch (error) {
+      console.error('Error toggling enrollment status:', error);
+    } finally {
+      setTogglingStatus(false);
     }
   };
 
@@ -200,12 +236,27 @@ export default function Enrollments() {
                     <option value="advanced">Advanced</option>
                   </select>
                 </div>
-                <button
-                  onClick={downloadCSV}
-                  className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition"
-                >
-                  📥 Download as CSV
-                </button>
+                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                  <button
+                    onClick={downloadCSV}
+                    className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition"
+                  >
+                    📥 Download as CSV
+                  </button>
+                  <div className="flex items-center gap-3 p-4 bg-white dark:bg-gray-700 rounded-lg border border-gray-300 dark:border-gray-600">
+                    <input
+                      type="checkbox"
+                      id="enrollmentToggle"
+                      checked={enrollmentOpen}
+                      onChange={toggleEnrollmentStatus}
+                      disabled={togglingStatus}
+                      className="w-5 h-5 cursor-pointer"
+                    />
+                    <label htmlFor="enrollmentToggle" className="cursor-pointer text-gray-800 dark:text-gray-200 font-semibold">
+                      {togglingStatus ? 'Updating...' : enrollmentOpen ? '✓ Enrollment Open' : '✗ Enrollment Closed'}
+                    </label>
+                  </div>
+                </div>
               </div>
 
               {/* Enrollments Table */}
