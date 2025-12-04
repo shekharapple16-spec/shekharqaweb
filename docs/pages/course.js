@@ -41,6 +41,13 @@ export default function Course() {
       description: 'Automating Jira acceptance extraction using Playwright MCP',
       videoPath: '/videos/jira acceptance extract and used playwright mcp to automate it.mp4',
       fileName: 'jira acceptance extract and used playwright mcp to automate it.mp4'
+    },
+    {
+      id: 3,
+      title: 'Locator Strategies - Locating Elements',
+      description: 'Learn effective locator strategies for finding and interacting with web elements',
+      videoPath: '/videos/locater mp4.mp4',
+      fileName: 'locater mp4.mp4'
     }
   ];
 
