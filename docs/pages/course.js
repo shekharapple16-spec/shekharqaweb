@@ -643,49 +643,90 @@ export default function Course() {
               <div className="text-center py-12">
                 <p className="text-gray-600 dark:text-gray-400">Loading videos...</p>
               </div>
-            ) : existingVideos.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {existingVideos.map((video) => (
-                  <div key={video.id} className="bg-gray-50 dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition">
-                    <div 
-                      className="relative aspect-video bg-gray-900 flex items-center justify-center cursor-pointer hover:opacity-80 transition group overflow-hidden"
-                      onClick={() => setSelectedVideo(video)}
-                    >
-                      <video 
-                        className="w-full h-full object-cover"
-                        muted
-                      >
-                        <source src={video.videoPath} type="video/mp4" />
-                      </video>
-                      <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-40 transition flex items-center justify-center">
-                        <svg className="w-16 h-16 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">
-                        {video.title}
-                      </h3>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                        {video.description}
-                      </p>
-                      <button 
-                        onClick={() => setSelectedVideo(video)}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition"
-                      >
-                        Watch Video
-                      </button>
+            ) : (
+              <>
+                {/* Local Videos Section */}
+                {existingVideos.length > 0 && (
+                  <div className="mb-12">
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">Local Videos</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {existingVideos.map((video) => (
+                        <div key={video.id} className="bg-gray-50 dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition">
+                          <div 
+                            className="relative aspect-video bg-gray-900 flex items-center justify-center cursor-pointer hover:opacity-80 transition group overflow-hidden"
+                            onClick={() => setSelectedVideo(video)}
+                          >
+                            <video 
+                              className="w-full h-full object-cover"
+                              muted
+                            >
+                              <source src={video.videoPath} type="video/mp4" />
+                            </video>
+                            <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-40 transition flex items-center justify-center">
+                              <svg className="w-16 h-16 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                              </svg>
+                            </div>
+                          </div>
+                          <div className="p-6">
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">
+                              {video.title}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                              {video.description}
+                            </p>
+                            <button 
+                              onClick={() => setSelectedVideo(video)}
+                              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition"
+                            >
+                              Watch Video
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-800 rounded-lg p-8 text-center">
-                <p className="text-blue-800 dark:text-blue-200 text-lg">
-                  No videos uploaded yet. Upload MP4 files to the <code className="bg-white dark:bg-gray-800 px-2 py-1 rounded text-xs">/public/videos/</code> folder.
-                </p>
-              </div>
+                )}
+
+                {/* YouTube Videos Section */}
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">YouTube Videos</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <a 
+                      href="https://www.youtube.com/watch?v=9-Jl0dxWQs8" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="bg-gray-50 dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition"
+                    >
+                      <div className="relative aspect-video bg-gray-900 flex items-center justify-center hover:opacity-80 transition group overflow-hidden">
+                        <img 
+                          src="https://img.youtube.com/vi/9-Jl0dxWQs8/maxresdefault.jpg" 
+                          alt="YouTube Video Thumbnail"
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-40 transition flex items-center justify-center">
+                          <svg className="w-16 h-16 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="p-6">
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">
+                          GitHub Copilot for Test Automation
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                          Master AI-powered test case generation and automation with GitHub Copilot
+                        </p>
+                        <button 
+                          className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition"
+                        >
+                          Watch on YouTube
+                        </button>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </>
             )}
               </div>
             </>

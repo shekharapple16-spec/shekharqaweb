@@ -1,7 +1,31 @@
 import Layout from '../components/Layout';
 import Head from 'next/head';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
+  const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+
+      // Hide scroll indicator if user has scrolled down significantly or reached near the bottom
+      if (scrollPosition > 100 || scrollPosition + windowHeight >= documentHeight - 100) {
+        setShowScrollIndicator(false);
+      } else {
+        setShowScrollIndicator(true);
+      }
+    };
+
+    // Call handler on mount to set initial state
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <Layout>
       <Head>
@@ -24,14 +48,20 @@ export default function Home() {
             {/* Left - Text Content */}
             <div className="text-center px-8 sm:px-12 lg:px-16">
               <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                Master GitHub Copilot
+                Supercharge Your Development Workflow
               </h1>
               <p className="text-lg md:text-xl text-blue-100 mb-8 leading-relaxed">
-                Your complete guide to leveraging AI-powered coding assistance for faster development, better code quality, and increased productivity
+                Master AI-powered coding assistance for faster development, better code quality, and increased productivity
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="/course" className="bg-white text-blue-600 hover:bg-gray-100 font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg inline-flex items-center justify-center">
                   Start Learning
+                </a>
+                <a href="/blog" className="bg-pink-600 text-white hover:bg-pink-700 font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747C22 11.251 17.5 6.253 12 6.253z" />
+                  </svg>
+                  Read Blog
                 </a>
                 <a href="https://www.linkedin.com/in/shekharqa" target="_blank" rel="noopener noreferrer" className="bg-blue-700 text-white hover:bg-blue-800 font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -48,7 +78,7 @@ export default function Home() {
               </div>
 
               {/* Quality Testing Solutions Text */}
-              <div className="mt-24 pt-12">
+              <div className="mt-12 pt-6">
                 <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-16">
                   <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                     I've provided quality testing solutions to industry-leading organizations
@@ -125,7 +155,7 @@ export default function Home() {
           </div>
 
           {/* Recommendations Section */}
-          <div className="mt-16 mb-32">
+          <div className="mt-0 mb-32">
             <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-16">
               <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 LinkedIn Recommendations
@@ -182,11 +212,13 @@ export default function Home() {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </div>
+        {showScrollIndicator && (
+          <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce z-40">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </div>
+        )}
       </div>
     </Layout>
   );
