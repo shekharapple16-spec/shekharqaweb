@@ -78,7 +78,7 @@ export default function Home() {
               </div>
 
               {/* Quality Testing Solutions Text */}
-              <div className="mt-12 pt-6 pb-16 md:pb-8">
+              <div className="mt-12 pt-6 pb-32 md:pb-8">
                 <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-16">
                   <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                     I've provided quality testing solutions to industry-leading organizations
