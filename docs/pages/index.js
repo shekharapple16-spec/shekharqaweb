@@ -93,17 +93,34 @@ export default function Home() {
           </div>
           
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <a href="/course" className="inline-block bg-white text-blue-600 hover:bg-gray-100 font-semibold py-3 px-8 rounded-lg transition duration-300">
-              Start Learning
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 flex-wrap">
+            <a href="/course" className="inline-block bg-white text-blue-600 hover:bg-gray-50 hover:text-blue-700 font-bold py-4 px-10 rounded-xl transition duration-300 transform hover:scale-110 hover:shadow-2xl shadow-lg hover:-translate-y-1">
+              🎓 Start Learning
             </a>
-            <a href="/blog" className="inline-block bg-pink-600 text-white hover:bg-pink-700 font-semibold py-3 px-8 rounded-lg transition duration-300">
-              Read Blog
+            <a href="/blog" className="inline-block bg-pink-600 text-white hover:bg-pink-500 font-bold py-4 px-10 rounded-xl transition duration-300 transform hover:scale-110 hover:shadow-2xl shadow-lg hover:-translate-y-1">
+              📝 Read Blog
             </a>
-            <a href="https://www.linkedin.com/in/shekharqa" target="_blank" rel="noopener noreferrer" className="inline-block bg-blue-700 text-white hover:bg-blue-800 font-semibold py-3 px-8 rounded-lg transition duration-300">
-              LinkedIn
+            <a href="https://www.linkedin.com/in/shekharqa" target="_blank" rel="noopener noreferrer" className="inline-block bg-blue-700 text-white hover:bg-blue-600 font-bold py-4 px-10 rounded-xl transition duration-300 transform hover:scale-110 hover:shadow-2xl shadow-lg hover:-translate-y-1">
+              💼 LinkedIn
+            </a>
+            <a href="https://topmate.io/chandra_shekhar12/page/cgXfOwKFlG" target="_blank" rel="noopener noreferrer" className="inline-block bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-4 px-10 rounded-xl transition duration-300 transform hover:scale-110 hover:shadow-2xl shadow-lg hover:-translate-y-1">
+              🎯 Topmate
             </a>
           </div>
+          <style jsx>{`
+            a:hover {
+              animation: pulse-glow 0.6s ease-in-out;
+            }
+            
+            @keyframes pulse-glow {
+              0%, 100% {
+                box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+              }
+              50% {
+                box-shadow: 0 0 40px rgba(59, 130, 246, 0.8);
+              }
+            }
+          `}</style>
         </div>
       </div>
 
